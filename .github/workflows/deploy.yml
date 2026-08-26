@@ -38,9 +38,16 @@ jobs:
         working-directory: ./terraform
         run: terraform apply -auto-approve
 
+      - name: get instance ip
+        id: deploy
+        working-directory: ./terraform
+        run: |
+          instance_ip=$(terraform output -raw instance_ip)
+          echo "instance_ip=$instance_ip" >> $GITHUB_ENV
+          echo "::set-output name=instance_ip::$instance_ip"
+
       - name: prepare ec2
         run: |
-          # chmod 400 ${{ secrets.EC2_SECRET_KEY }}
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SECRET_KEY }} ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
           set -e
           sudo yum update -y
