@@ -134,29 +134,29 @@ resource "aws_lb_listener" "project_listener" {
     }
 }
 
-resource "aws_autoscaling_group" "project_asg" {
-    desired_capacity     = 2
-    max_size             = 3
-    min_size             = 1
-    vpc_zone_identifier  = [aws_subnet.project_subnet_public_1.id, aws_subnet.project_subnet_public_2.id]
-    target_group_arns    = [aws_lb_target_group.project_target_group.arn]
-    launch_configuration = aws_launch_configuration.project_launch_configuration.id
+# resource "aws_autoscaling_group" "project_asg" {
+#     desired_capacity     = 2
+#     max_size             = 3
+#     min_size             = 1
+#     vpc_zone_identifier  = [aws_subnet.project_subnet_public_1.id, aws_subnet.project_subnet_public_2.id]
+#     target_group_arns    = [aws_lb_target_group.project_target_group.arn]
+#     launch_configuration = aws_launch_configuration.project_launch_configuration.id
 
-    tag {
-        key                 = "Name"
-        value               = "project-asg-instance"
-        propagate_at_launch = true
-    }
-}
+#     tag {
+#         key                 = "Name"
+#         value               = "project-asg-instance"
+#         propagate_at_launch = true
+#     }
+# }
 
-resource "aws_launch_configuration" "project_launch_configuration" {
-    name          = "project-launch-configuration"
-    image_id      = "ami-0c4e355e0cc9c5225" # Amazon Linux 2 AMI
-    instance_type = "t2.medium"
-    security_groups = [aws_security_group.project_security_group.id]
-    key_name      = "project" # Replace with your key pair name
+# resource "aws_launch_configuration" "project_launch_configuration" {
+#     name          = "project-launch-configuration"
+#     image_id      = "ami-0c4e355e0cc9c5225" # Amazon Linux 2 AMI
+#     instance_type = "t2.medium"
+#     security_groups = [aws_security_group.project_security_group.id]
+#     key_name      = "project" # Replace with your key pair name
 
-    lifecycle {
-        create_before_destroy = true
-    }
-}
+#     lifecycle {
+#         create_before_destroy = true
+#     }
+# }
