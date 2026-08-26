@@ -1,0 +1,78 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: check aws identity
+        run: aws sts get-caller-identity
+
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: terraform plan
+
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
+
+      - name: prepare ec2
+        run: |
+          # chmod 400 ${{ secrets.EC2_SECRET_KEY }}
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SECRET_KEY }} ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
+          set -e
+          sudo yum update -y
+          sudo yum install -y docker git
+          sudo systemctl start docker
+          sudo systemctl enable docker
+          sudo usermod -aG docker ec2-user
+          newgrp docker
+          mkdir -p ~/.docker/cli-plugins
+          curl -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-$(uname -m)" -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          docker compose version
+          EOF
+
+      - name: clone/pull repository
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SECRET_KEY }} ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
+          set -e
+          if [ ! -d "aws-final-project-with-docker-terraform-ci-cd" ]; then
+            git clone https://github.com/SIRIUSBLACK955/aws-final-project-with-docker-terraform-ci-cd.git
+          else
+            cd aws-final-project-with-docker-terraform-ci-cd
+            git pull
+          fi
+            EOF
+
+      - name: build and run docker container
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SECRET_KEY }} ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
+          set -e
+          cd aws-final-project-with-docker-terraform-ci-cd
+          docker build -t my-app .
+          docker run -d -p 8081:8080 --name my-app my-app
+          EOF
+
