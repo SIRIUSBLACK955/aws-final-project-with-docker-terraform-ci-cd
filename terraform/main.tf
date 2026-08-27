@@ -88,6 +88,7 @@ resource "aws_instance" "project_instance" {
     subnet_id = aws_subnet.project_subnet_public_1.id
     vpc_security_group_ids = [aws_security_group.project_security_group.id]
     key_name = "project" # Replace with your key pair name
+    associate_public_ip_address = true
 
     tags = {
         Name = "project-instance"
