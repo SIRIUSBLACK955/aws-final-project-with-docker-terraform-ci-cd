@@ -24,7 +24,9 @@ jobs:
         run: aws sts get-caller-identity
 
       - name: setup terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
 
       - name: Terraform Init
         working-directory: ./terraform
@@ -41,11 +43,20 @@ jobs:
       - name: get instance ip
         id: deploy
         working-directory: ./terraform
-        shell: bash
         run: |
-          instance_ip=$(terraform output -raw instance_ip 2>/dev/null | sed -n '1p')
+          instance_ip=$(terraform output -raw instance_ip)
           echo "Instance IP: $instance_ip"
-          printf 'instance_ip=%s\n' "$instance_ip" >> "$GITHUB_OUTPUT"
+          echo "instance_ip=$instance_ip" >> "$GITHUB_OUTPUT"
+
+      - name: Setup SSH key
+        run: |
+          cat > /tmp/ec2-key.pem <<'EOF'
+          ${{ secrets.EC2_SECRET_KEY }}
+          EOF
+
+          chmod 600 /tmp/ec2-key.pem
+
+          echo "SSH key created"
 
       - name: prepare ec2
         run: |
