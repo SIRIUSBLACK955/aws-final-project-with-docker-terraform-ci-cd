@@ -41,10 +41,11 @@ jobs:
       - name: get instance ip
         id: deploy
         working-directory: ./terraform
+        shell: bash
         run: |
-          instance_ip=$(terraform output -raw instance_ip 2>/dev/null | tail -n 1)
+          instance_ip=$(terraform output -raw instance_ip 2>/dev/null | sed -n '1p')
           echo "Instance IP: $instance_ip"
-          echo "instance_ip=$instance_ip" >> "$GITHUB_OUTPUT"
+          printf 'instance_ip=%s\n' "$instance_ip" >> "$GITHUB_OUTPUT"
 
       - name: prepare ec2
         run: |
