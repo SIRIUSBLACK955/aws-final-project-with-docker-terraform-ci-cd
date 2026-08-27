@@ -98,6 +98,7 @@ jobs:
             ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
           set -e
           cd aws-final-project-with-docker-terraform-ci-cd
+          cd docker
           docker build -t my-app .
           docker run -d -p 8081:8080 --name my-app my-app
           EOF
