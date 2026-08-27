@@ -82,7 +82,12 @@ jobs:
 
       - name: clone/pull repository
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SECRET_KEY }} ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
+          echo "${{ secrets.EC2_SECRET_KEY }}" > /tmp/ec2-key.pem
+          chmod 600 /tmp/ec2-key.pem
+
+          ssh -o StrictHostKeyChecking=no \
+            -i /tmp/ec2-key.pem \
+            ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
           set -e
           if [ ! -d "aws-final-project-with-docker-terraform-ci-cd" ]; then
             git clone https://github.com/SIRIUSBLACK955/aws-final-project-with-docker-terraform-ci-cd.git
@@ -94,7 +99,12 @@ jobs:
 
       - name: build and run docker container
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SECRET_KEY }} ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
+          echo "${{ secrets.EC2_SECRET_KEY }}" > /tmp/ec2-key.pem
+          chmod 600 /tmp/ec2-key.pem
+
+          ssh -o StrictHostKeyChecking=no \
+            -i /tmp/ec2-key.pem \
+            ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
           set -e
           cd aws-final-project-with-docker-terraform-ci-cd
           docker build -t my-app .
