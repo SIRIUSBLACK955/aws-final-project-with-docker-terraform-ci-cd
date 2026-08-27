@@ -49,7 +49,13 @@ jobs:
 
       - name: prepare ec2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SECRET_KEY }} ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
+          echo "${{ secrets.EC2_SECRET_KEY }}" > /tmp/ec2-key.pem
+          chmod 600 /tmp/ec2-key.pem
+
+          ssh -o StrictHostKeyChecking=no \
+            -i /tmp/ec2-key.pem \
+            ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
+
           set -e
           sudo yum update -y
           sudo yum install -y docker git
@@ -65,13 +71,7 @@ jobs:
 
       - name: clone/pull repository
         run: |
-          echo "${{ secrets.EC2_SECRET_KEY }}" > /tmp/ec2-key.pem
-          chmod 600 /tmp/ec2-key.pem
-
-          ssh -o StrictHostKeyChecking=no \
-            -i /tmp/ec2-key.pem \
-            ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
-
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SECRET_KEY }} ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
           set -e
           if [ ! -d "aws-final-project-with-docker-terraform-ci-cd" ]; then
             git clone https://github.com/SIRIUSBLACK955/aws-final-project-with-docker-terraform-ci-cd.git
