@@ -1,8 +1,12 @@
-package main.java.com.example.app;
+package com.example.app;
 
 import java.time.LocalDateTime;
 
 public class ContinuousApp {
+
+    public static String getStatus() {
+        return "Application is running";
+    }
 
     public static void main(String[] args) {
 
@@ -14,7 +18,7 @@ public class ContinuousApp {
         while (true) {
 
             System.out.println(
-                    "Application is running... Time: "
+                    getStatus() + "... Time: "
                             + LocalDateTime.now()
             );
 

@@ -1,4 +1,4 @@
-package test.java.com.example.app;
+package com.example.app;
 
 import org.junit.jupiter.api.Test;
 
