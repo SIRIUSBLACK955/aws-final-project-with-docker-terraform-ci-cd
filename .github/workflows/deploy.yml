@@ -60,8 +60,6 @@ jobs:
 
       - name: prepare ec2
         run: |
-          
-
           ssh -o StrictHostKeyChecking=no \
             -i /tmp/ec2-key.pem \
             ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
@@ -81,9 +79,6 @@ jobs:
 
       - name: clone/pull repository
         run: |
-          echo "${{ secrets.EC2_SECRET_KEY }}" > /tmp/ec2-key.pem
-          chmod 600 /tmp/ec2-key.pem
-
           ssh -o StrictHostKeyChecking=no \
             -i /tmp/ec2-key.pem \
             ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
@@ -94,13 +89,10 @@ jobs:
             cd aws-final-project-with-docker-terraform-ci-cd
             git pull
           fi
-            EOF
+          EOF
 
       - name: build and run docker container
         run: |
-          echo "${{ secrets.EC2_SECRET_KEY }}" > /tmp/ec2-key.pem
-          chmod 600 /tmp/ec2-key.pem
-
           ssh -o StrictHostKeyChecking=no \
             -i /tmp/ec2-key.pem \
             ec2-user@${{ steps.deploy.outputs.instance_ip }} <<'EOF'
