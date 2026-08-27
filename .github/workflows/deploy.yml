@@ -42,7 +42,7 @@ jobs:
         id: deploy
         working-directory: ./terraform
         run: |
-          instance_ip=$(terraform output -raw instance_ip)
+          instance_ip=$(terraform output -raw instance_ip 2>/dev/null | tail -n 1)
           echo "Instance IP: $instance_ip"
           echo "instance_ip=$instance_ip" >> "$GITHUB_OUTPUT"
 
