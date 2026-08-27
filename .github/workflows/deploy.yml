@@ -43,8 +43,8 @@ jobs:
         working-directory: ./terraform
         run: |
           instance_ip=$(terraform output -raw instance_ip)
-          echo "instance_ip=$instance_ip" >> $GITHUB_ENV
-          echo "::set-output name=instance_ip::$instance_ip"
+          echo "Instance IP: $instance_ip"
+          echo "instance_ip=$instance_ip" >> "$GITHUB_OUTPUT"
 
       - name: prepare ec2
         run: |
