@@ -83,7 +83,7 @@ resource "aws_security_group" "project_security_group" {
 }
 
 resource "aws_instance" "project_instance" {
-    ami = "ami-0226d82b291a8629d" # Amazon Linux 2 AMI
+    ami = "ami-000658d93b648929c" # Amazon Linux 2 AMI
     instance_type = "t2.medium"
     subnet_id = aws_subnet.project_subnet_public_1.id
     vpc_security_group_ids = [aws_security_group.project_security_group.id]
