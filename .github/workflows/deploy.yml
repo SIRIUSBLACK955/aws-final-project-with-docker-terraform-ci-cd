@@ -60,8 +60,7 @@ jobs:
 
       - name: prepare ec2
         run: |
-          # echo "${{ secrets.EC2_SECRET_KEY }}" > /tmp/ec2-key.pem
-          # chmod 600 /tmp/ec2-key.pem
+          
 
           ssh -o StrictHostKeyChecking=no \
             -i /tmp/ec2-key.pem \
